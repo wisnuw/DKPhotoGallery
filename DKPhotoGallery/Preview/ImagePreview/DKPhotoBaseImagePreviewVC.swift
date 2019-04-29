@@ -71,8 +71,8 @@ open class DKPhotoBaseImagePreviewVC: DKPhotoBasePreviewVC {
             DispatchQueue.main.async(execute: {
                 switch status {
                 case .authorized:
-                    if let animatedImage = contentView.animatedImage {
-                        ALAssetsLibrary().writeImageData(toSavedPhotosAlbum: animatedImage.data, metadata: nil, completionBlock: { (newURL, error) in
+                    if let animatedImage = contentView.currentFrame {
+                        ALAssetsLibrary().writeImageData(toSavedPhotosAlbum: animatedImage.pngData(), metadata: nil, completionBlock: { (newURL, error) in
                             self.showImageSaveResult(with: error)
                         })
                     } else if let imageURL = self.item.imageURL, imageURL.isFileURL, let data = try? Data(contentsOf: imageURL) {
@@ -118,7 +118,7 @@ open class DKPhotoBaseImagePreviewVC: DKPhotoBasePreviewVC {
         if let data = content as? Data {
             let imageFormat = NSData.sd_imageFormat(forImageData: data)
             if imageFormat == .GIF {
-                contentView.animatedImage = FLAnimatedImage(gifData: data)
+                contentView.animationImages = [SDAnimatedImage(data: data)] as? [UIImage]
             } else {
                 contentView.image = UIImage(data: data)
             }
@@ -133,7 +133,7 @@ open class DKPhotoBaseImagePreviewVC: DKPhotoBasePreviewVC {
         if let contentView = self.contentView as? DKPhotoImageView {
             if let image = contentView.image {
                 return image
-            } else if contentView.animatedImage != nil {
+            } else if contentView.animationImages != nil {
                 return contentView.currentFrame
             } else {
                 return self.item.thumbnail
@@ -161,7 +161,7 @@ open class DKPhotoBaseImagePreviewVC: DKPhotoBasePreviewVC {
         
         if let image = contentView.image {
             return image.size
-        } else if let animatedImage = contentView.animatedImage {
+        } else if let animatedImage = contentView.currentFrame {
             return animatedImage.size
         } else {
             return CGSize.zero

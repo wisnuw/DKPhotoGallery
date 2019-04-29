@@ -33,7 +33,7 @@ class DKPhotoImageWebDownloader: DKPhotoImageDownloader {
     
     var _downloader: SDWebImageDownloader = {
         let downloader = SDWebImageDownloader()
-        downloader.executionOrder = .lifoExecutionOrder
+        downloader.config.executionOrder = .lifoExecutionOrder
         
         return downloader
     }()
