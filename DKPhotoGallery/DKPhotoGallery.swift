@@ -109,11 +109,14 @@ DKPhotoGalleryContentDataSource, DKPhotoGalleryContentDelegate {
         
         contentVC.footerView = self.footerView
         
-        let keyData = Data(bytes: [0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0x61, 0x72])
-        let key = String(data: keyData, encoding: String.Encoding.ascii)!
-        if let statusBar = UIApplication.shared.value(forKey: key) as? UIView {
-            self.statusBar = statusBar
+        if #available(iOS 13.0, *) {} else {
+            let keyData = Data([0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0x61, 0x72])
+            let key = String(data: keyData, encoding: String.Encoding.ascii)!
+            if let statusBar = UIApplication.shared.value(forKey: key) as? UIView {
+                self.statusBar = statusBar
+            }
         }
+
     }
     
     private lazy var doSetupOnce: () -> Void = {
@@ -143,18 +146,12 @@ DKPhotoGalleryContentDataSource, DKPhotoGalleryContentDelegate {
         super.viewWillAppear(animated)
         
         self.doSetupOnce()
-        
-        UIApplication.shared.statusBarStyle = DKPhotoGallery._preferredStatusBarStyle
-        
         self.modalPresentationCapturesStatusBarAppearance = true
         self.setNeedsStatusBarAppearanceUpdate()
     }
     
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        UIApplication.shared.statusBarStyle = self.defaultStatusBarStyle
-        
         self.modalPresentationCapturesStatusBarAppearance = false
         self.setNeedsStatusBarAppearanceUpdate()
     }
